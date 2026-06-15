@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Combien vaut vraiment un client fidèle ? — Calculateur</title>
+<meta name="description" content="Calculez la vraie valeur vie de votre client (LTV) et votre coût d'acquisition (CAC). 6 questions, 2 minutes. Sans inscription.">
+<style>
+  :root{
+    --paper:#F4EFE5;--paper-deep:#EBE3D4;--paper-soft:#FBF8F1;
+    --ink:#1C1B17;--ink-soft:#4A463C;--ink-mute:#7A7164;
+    --line:#D8CFBC;--line-soft:#E5DECC;
+    --forest:#1F4A38;--forest-deep:#163528;
+    --amber:#BE8A36;--amber-soft:#E8C886;
+    --red:#B0432B;--red-soft:#D88467;
+    --shadow:rgba(28,27,23,.10);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{font-family:ui-sans-serif,-apple-system,"Segoe UI",system-ui,"Helvetica Neue",sans-serif;background:var(--paper);color:var(--ink);line-height:1.55;min-height:100vh;background-image:radial-gradient(circle at 10% 6%, rgba(31,74,56,.05), transparent 42%),radial-gradient(circle at 90% 94%, rgba(190,138,54,.06), transparent 45%);-webkit-font-smoothing:antialiased}
+  .serif{font-family:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif}
+  .wrap{max-width:640px;margin:0 auto;padding:24px 20px 0;min-height:100vh;display:flex;flex-direction:column}
+  .brandbar{display:flex;align-items:center;gap:9px;font-size:13px;letter-spacing:.04em;color:var(--ink-soft);text-transform:uppercase;font-weight:600}
+  .brandbar .dot{width:9px;height:9px;border-radius:50%;background:var(--forest);box-shadow:0 0 0 3px rgba(31,74,56,.15)}
+  .screen{animation:rise .45s cubic-bezier(.2,.7,.2,1) both}
+  @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  .hidden{display:none !important}
+
+  .card{background:linear-gradient(180deg,#FBF8F1,#F4EFE5);border:1px solid var(--line);border-radius:18px;padding:32px 26px;margin-top:22px;box-shadow:0 1px 0 rgba(255,255,255,.7) inset,0 18px 40px -28px var(--shadow)}
+  .eyebrow{font-size:12.5px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--amber);margin-bottom:14px}
+  h1.serif{font-size:clamp(27px,7vw,38px);line-height:1.1;font-weight:600;letter-spacing:-.01em;margin-bottom:16px}
+  .lede{font-size:16px;color:var(--ink-soft);margin-bottom:24px}
+  .meta{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:24px}
+  .chip{font-size:12px;padding:5px 11px;border-radius:30px;background:transparent;border:1px solid var(--line);color:var(--ink-soft)}
+  .chip b{color:var(--ink)}
+
+  .btn{appearance:none;border:none;cursor:pointer;font-family:inherit;background:var(--forest);color:#F4EFE5;font-size:16px;font-weight:600;padding:16px 24px;border-radius:12px;width:100%;transition:transform .12s,background .2s,box-shadow .2s;box-shadow:0 10px 22px -12px rgba(31,74,56,.6)}
+  .btn:hover{background:var(--forest-deep);transform:translateY(-1px)}
+  .btn:active{transform:translateY(0)}
+  .btn.ghost{background:transparent;color:var(--ink-soft);box-shadow:none;border:1px solid var(--line);font-weight:500}
+  .btn.ghost:hover{background:var(--paper-deep);transform:none}
+  .noprivacy{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:var(--ink-soft);margin-top:14px;padding:5px 11px;border:1px solid var(--line);border-radius:30px}
+
+  .progress-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px}
+  .progress-head .step{font-size:13px;color:var(--ink-soft);font-weight:600}
+  .progress-head .axe{font-size:12px;color:var(--amber);font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+  .track{height:6px;background:var(--paper-deep);border-radius:30px;overflow:hidden;margin-bottom:30px}
+  .fill{height:100%;background:linear-gradient(90deg,var(--forest),var(--amber));border-radius:30px;transition:width .4s cubic-bezier(.2,.7,.2,1)}
+  .qtitle{font-family:"Iowan Old Style",Palatino,Georgia,serif;font-size:23px;line-height:1.22;font-weight:600;margin-bottom:6px}
+  .qexpl{font-size:14px;color:var(--ink-mute);margin-bottom:28px;max-width:48ch}
+  .bigval{text-align:center;margin:8px 0 18px}
+  .bigval .num{font-family:"Iowan Old Style",Palatino,Georgia,serif;font-size:clamp(42px,12vw,66px);font-weight:700;line-height:1;letter-spacing:-.02em;color:var(--forest);transition:transform .15s}
+  .bigval .unit{display:block;margin-top:8px;font-size:14px;color:var(--ink-mute);letter-spacing:.04em}
+
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:8px;border-radius:30px;background:linear-gradient(to right,var(--forest) 0%,var(--forest) var(--p,30%),var(--paper-deep) var(--p,30%),var(--paper-deep) 100%);outline:none;cursor:pointer}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:26px;height:26px;border-radius:50%;background:var(--forest);border:3px solid var(--paper-soft);cursor:pointer;box-shadow:0 3px 10px rgba(31,74,56,.4);transition:transform .12s}
+  input[type=range]::-webkit-slider-thumb:active{transform:scale(1.18)}
+  input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;background:var(--forest);border:3px solid var(--paper-soft);cursor:pointer;box-shadow:0 3px 10px rgba(31,74,56,.4)}
+  .slider-bounds{display:flex;justify-content:space-between;font-size:11.5px;color:var(--ink-mute);margin-top:8px;letter-spacing:.04em}
+  .nav{display:flex;gap:10px;margin-top:30px}
+  .nav .btn{flex:1}
+  .nav .btn.ghost{flex:0 0 auto;min-width:48px;padding:16px 18px}
+
+  /* HERO double */
+  .hero{background:linear-gradient(160deg,var(--forest) 0%,var(--forest-deep) 100%);color:#F4EFE5;border-radius:20px;padding:28px 24px 22px;margin-bottom:14px;box-shadow:0 20px 50px -28px rgba(31,74,56,.55);position:relative;overflow:hidden}
+  .hero::before{content:"";position:absolute;top:-40%;right:-20%;width:340px;height:340px;background:radial-gradient(circle,rgba(190,138,54,.25),transparent 65%);pointer-events:none}
+  .hero .lbl{font-size:12px;letter-spacing:.13em;text-transform:uppercase;font-weight:600;opacity:.7;margin-bottom:6px;position:relative}
+  .hero-grid{display:flex;flex-wrap:wrap;gap:18px;position:relative}
+  .hero-grid > div{flex:1;min-width:160px}
+  .hero .bignum{font-family:"Iowan Old Style",Palatino,Georgia,serif;font-size:clamp(34px,9vw,48px);font-weight:700;line-height:1;letter-spacing:-.02em;margin:2px 0 4px;position:relative}
+  .hero .bignum em{font-style:normal;color:var(--amber-soft);font-size:.55em;font-weight:600;margin-left:4px}
+  .hero .miniK{font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;opacity:.65;margin-bottom:3px}
+  .hero .ratio-big{font-family:"Iowan Old Style",Palatino,Georgia,serif;font-size:clamp(34px,9vw,48px);font-weight:700;line-height:1;letter-spacing:-.02em;color:var(--amber-soft)}
+  .hero .sub{font-size:13px;opacity:.78;margin-top:4px}
+
+  /* VERDICT */
+  .verdict{border-radius:18px;padding:24px 22px;margin-bottom:14px;text-align:center;color:#F4EFE5;position:relative;overflow:hidden;box-shadow:0 20px 50px -28px var(--shadow)}
+  .verdict::before{content:"";position:absolute;top:-40%;right:-20%;width:340px;height:340px;background:radial-gradient(circle,rgba(255,255,255,.18),transparent 65%);pointer-events:none}
+  .verdict.danger{background:linear-gradient(160deg,var(--red),#7A2E1A)}
+  .verdict.warn{background:linear-gradient(160deg,#C07F2E,#8A5A20)}
+  .verdict.good{background:linear-gradient(160deg,var(--forest),var(--forest-deep))}
+  .verdict .lbl{font-size:12px;letter-spacing:.13em;text-transform:uppercase;font-weight:600;opacity:.85;margin-bottom:10px;position:relative}
+  .verdict h2{font-family:"Iowan Old Style",Palatino,Georgia,serif;font-size:clamp(22px,6vw,30px);font-weight:700;line-height:1.2;margin-bottom:10px;position:relative}
+  .verdict p{font-size:14.5px;opacity:.92;position:relative;max-width:46ch;margin:0 auto}
+  .verdict .max-cac{margin-top:18px;padding-top:18px;border-top:1px solid rgba(255,255,255,.18);position:relative}
+  .verdict .max-cac .k{font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;opacity:.7;margin-bottom:4px}
+  .verdict .max-cac .v{font-family:"Iowan Old Style",Palatino,Georgia,serif;font-size:clamp(26px,7vw,34px);font-weight:700;line-height:1;letter-spacing:-.01em}
+
+  /* TIMELINE LTV année par année */
+  .timeline-wrap{background:var(--paper-soft);border:1px solid var(--line);border-radius:16px;padding:24px 22px;margin-bottom:14px}
+  .timeline-wrap h3{font-family:"Iowan Old Style",Palatino,Georgia,serif;font-size:18px;margin-bottom:4px}
+  .timeline-wrap .sub{font-size:13px;color:var(--ink-mute);margin-bottom:20px}
+  .timeline{display:flex;align-items:flex-end;gap:6px;height:160px;margin-bottom:14px;padding-top:8px}
+  .timeline .col{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;min-width:0}
+  .timeline .col .bar{
+    width:100%;
+    border-radius:8px 8px 0 0;
+    background:linear-gradient(180deg,var(--forest),var(--forest-deep));
+    transition:height .6s cubic-bezier(.2,.7,.2,1);
+    min-height:6px;
+    position:relative;
+  }
+  .timeline .col.cac .bar{background:linear-gradient(180deg,var(--red),#7A2E1A)}
+  .timeline .col .y{font-size:11px;color:var(--ink-mute);font-weight:600}
+  .timeline .col .v{font-family:"Iowan Old Style",Palatino,Georgia,serif;font-size:11.5px;font-weight:700;color:var(--ink);white-space:nowrap}
+  .timeline-legend{display:flex;gap:18px;justify-content:center;font-size:12px;color:var(--ink-soft);padding-top:8px;border-top:1px solid var(--line-soft);margin-top:8px}
+  .timeline-legend .ld{display:flex;align-items:center;gap:8px}
+  .timeline-legend .ld .sw{width:10px;height:10px;border-radius:3px}
+  .breakeven{font-size:13.5px;color:var(--ink-soft);margin-top:12px;text-align:center}
+  .breakeven b{color:var(--forest);font-weight:700}
+
+  .decomp,.auto,.adjust{background:var(--paper-soft);border:1px solid var(--line);border-radius:16px;padding:24px 20px;margin-bottom:14px}
+  .decomp h3,.adjust h3,.auto h3{font-family:"Iowan Old Style",Palatino,Georgia,serif;font-size:18px;margin-bottom:4px}
+  .decomp .sub,.adjust .sub,.auto p{font-size:13px;color:var(--ink-mute);margin-bottom:18px}
+  .auto p{font-size:14.5px;color:var(--ink-soft);margin-bottom:14px}
+  .auto h3{font-size:21px;line-height:1.25;margin-bottom:12px}
+
+  .auto{background:linear-gradient(165deg,var(--paper-soft) 0%,var(--paper-deep) 100%)}
+  .auto .e{font-size:12.5px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--forest);margin-bottom:8px}
+  .gainline{display:flex;flex-wrap:wrap;gap:16px;padding:16px 18px;background:var(--paper-soft);border:1px dashed var(--amber);border-radius:12px}
+  .gainline > div{flex:1;min-width:130px}
+  .gainline .k{font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--amber);font-weight:700;margin-bottom:3px}
+  .gainline .v{font-family:"Iowan Old Style",Palatino,Georgia,serif;font-size:24px;font-weight:700;color:var(--forest);line-height:1.1}
+  .auto .note{font-size:12.5px;color:var(--ink-mute);margin-top:14px;font-style:italic;margin-bottom:0}
+
+  .leviers{background:var(--paper-soft);border:1px solid var(--line);border-radius:16px;padding:24px 22px;margin-bottom:14px}
+  .leviers .e{font-size:12.5px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--amber);margin-bottom:8px}
+  .leviers h3{font-family:"Iowan Old Style",Palatino,Georgia,serif;font-size:21px;font-weight:600;line-height:1.25;margin-bottom:6px}
+  .leviers .intro{font-size:13.5px;color:var(--ink-mute);margin-bottom:20px}
+  .lev{display:flex;gap:16px;padding:16px 0;border-bottom:1px solid var(--line-soft)}
+  .lev:last-of-type{border-bottom:none;padding-bottom:0}
+  .lev:first-of-type{padding-top:8px}
+  .lev .n{font-family:"Iowan Old Style",Palatino,Georgia,serif;font-size:32px;font-weight:700;color:var(--forest);line-height:1;flex-shrink:0;width:38px;letter-spacing:-.02em}
+  .lev .body strong{display:block;font-size:15.5px;font-weight:600;margin-bottom:4px;color:var(--ink)}
+  .lev .body p{font-size:13.5px;color:var(--ink-soft);line-height:1.5}
+
+  .nextup{background:linear-gradient(160deg,#FBF8F1,#F0E4C8);border:1px solid var(--amber);border-radius:16px;padding:26px 22px;margin-bottom:14px;text-align:center}
+  .nextup .e{font-size:11.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--amber);margin-bottom:10px}
+  .nextup h3{font-family:"Iowan Old Style",Palatino,Georgia,serif;font-size:20px;font-weight:600;line-height:1.3;margin-bottom:10px;color:var(--ink)}
+  .nextup p{font-size:14px;color:var(--ink-soft);margin-bottom:18px;max-width:46ch;margin-left:auto;margin-right:auto}
+  .nextup .lk{display:inline-flex;align-items:center;gap:10px;padding:13px 22px;border-radius:11px;background:var(--forest);color:#F4EFE5;font-weight:600;font-size:14.5px;text-decoration:none;transition:transform .12s,background .2s,box-shadow .2s;box-shadow:0 8px 18px -10px rgba(31,74,56,.55)}
+  .nextup .lk:hover{background:var(--forest-deep);transform:translateY(-1px)}
+  .nextup .lk svg{width:16px;height:16px;flex-shrink:0}
+
+  .adjust .grp{margin-bottom:22px;padding-bottom:18px;border-bottom:1px solid var(--line-soft)}
+  .adjust .grp:last-child{margin-bottom:0;padding-bottom:0;border-bottom:none}
+  .adjust .grph{display:flex;align-items:baseline;gap:10px;margin-bottom:14px}
+  .adjust .grph .n{font-family:"Iowan Old Style",Palatino,Georgia,serif;font-weight:700;font-size:18px;color:var(--amber);line-height:1}
+  .adjust .grph h4{font-family:"Iowan Old Style",Palatino,Georgia,serif;font-size:15.5px;font-weight:600}
+  .adjust .f{margin-bottom:14px}
+  .adjust .f:last-child{margin-bottom:0}
+  .adjust .frow{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;gap:12px}
+  .adjust .flbl{font-size:13.5px;font-weight:600;color:var(--ink)}
+  .adjust .fval{font-family:"Iowan Old Style",Palatino,Georgia,serif;font-weight:700;font-size:15.5px;color:var(--forest);white-space:nowrap;padding:1px 8px;background:var(--paper);border-radius:6px}
+  .adjust input[type=range]{height:6px}
+  .adjust input[type=range]::-webkit-slider-thumb{width:18px;height:18px}
+  .adjust input[type=range]::-moz-range-thumb{width:18px;height:18px}
+
+  .disclaimer{font-size:12px;color:var(--ink-mute);text-align:center;margin:14px 0 0;line-height:1.5;padding:0 12px}
+  .footer{text-align:center;padding:22px 14px 26px;font-size:12.5px;color:var(--ink-soft);line-height:1.6}
+  .footer b{color:var(--forest);font-weight:700}
+
+  .knock{animation:knock .25s ease-out}
+  @keyframes knock{0%{transform:scale(1)}50%{transform:scale(1.08)}100%{transform:scale(1)}}
+  .pulse{animation:pulse .55s cubic-bezier(.2,.7,.2,1)}
+  @keyframes pulse{0%{transform:scale(1)}45%{transform:scale(1.04);color:var(--amber-soft)}100%{transform:scale(1)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brandbar"><span class="dot"></span><span>Calculateur guidé</span></div>
+
+  <!-- INTRO -->
+  <section id="s-intro" class="screen">
+    <div class="card">
+      <div class="eyebrow">La valeur cachée de vos clients</div>
+      <h1 class="serif">Combien vaut vraiment un client fidèle&nbsp;?</h1>
+      <p class="lede">La plupart des dirigeants TPE/PME mesurent leurs clients à la dernière commande. Très peu calculent ce qu'un client leur rapporte vraiment sur toute sa durée de vie. Ce chiffre seul change la façon de piloter son commerce. En 6 questions, vous l'aurez.</p>
+
+      <div class="meta">
+        <span class="chip"><b>6</b> questions</span>
+        <span class="chip"><b>2</b> minutes</span>
+        <span class="chip">LTV + CAC + ratio</span>
+        <span class="chip">Aucune inscription</span>
+      </div>
+
+      <button class="btn" onclick="start()">Lancer le calcul</button>
+      <span class="noprivacy">🔒 Aucune donnée collectée, calcul 100&nbsp;% local</span>
+    </div>
+  </section>
+
+  <!-- STEP -->
+  <section id="s-step" class="screen hidden">
+    <div class="card">
+      <div class="progress-head">
+        <span class="step" id="stepLabel">Question 1 / 6</span>
+        <span class="axe" id="axeLabel">Mon client moyen</span>
+      </div>
+      <div class="track"><div class="fill" id="fill" style="width:16.6%"></div></div>
+
+      <h2 class="qtitle serif" id="qTitle"></h2>
+      <p class="qexpl" id="qExpl"></p>
+
+      <div class="bigval">
+        <span class="num" id="bigNum">0</span>
+        <span class="unit" id="bigUnit"></span>
+      </div>
+      <input type="range" id="slider" min="0" max="100" value="50">
+      <div class="slider-bounds"><span id="boundMin">0</span><span id="boundMax">100</span></div>
+
+      <div class="nav">
+        <button class="btn ghost" id="prevBtn" onclick="prev()">←</button>
+        <button class="btn" id="nextBtn" onclick="next()">Continuer</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESULT -->
+  <section id="s-result" class="screen hidden">
+
+    <!-- HERO double -->
+    <div class="hero">
+      <div class="hero-grid">
+        <div>
+          <div class="lbl">Valeur vie nette d'un client</div>
+          <div class="bignum"><span id="ltvNet">0</span><em>€</em></div>
+          <div class="sub">Marge cumulée sur toute la relation</div>
+        </div>
+        <div>
+          <div class="miniK">Ratio LTV / CAC</div>
+          <div class="ratio-big"><span id="ratio">0</span></div>
+          <div class="sub" id="ratioSub">—</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VERDICT -->
+    <div class="verdict" id="verdict">
+      <div class="lbl" id="verdictLbl">Diagnostic acquisition</div>
+      <h2 id="verdictTitle">—</h2>
+      <p id="verdictMsg">—</p>
+      <div class="max-cac">
+        <div class="k">Vous pouvez dépenser jusqu'à</div>
+        <div class="v"><span id="maxCac">0</span>&nbsp;€</div>
+        <div class="sub" style="font-size:12.5px;opacity:.75;margin-top:4px">par client acquis, en restant rentable (ratio 3:1)</div>
+      </div>
+    </div>
+
+    <!-- TIMELINE -->
+    <div class="timeline-wrap">
+      <h3>La valeur d'un client, année par année</h3>
+      <div class="sub">Combien un client vous rapporte cumulativement, et à quel moment il rembourse son coût d'acquisition.</div>
+      <div class="timeline" id="timeline"></div>
+      <div class="timeline-legend">
+        <div class="ld"><span class="sw" style="background:var(--forest)"></span>Marge cumulée</div>
+        <div class="ld"><span class="sw" style="background:var(--red)"></span>Coût d'acquisition</div>
+      </div>
+      <div class="breakeven" id="breakeven">—</div>
+    </div>
+
+    <!-- AUTO -->
+    <div class="auto">
+      <div class="e">Et si vous fidélisiez un an de plus&nbsp;?</div>
+      <h3 class="serif">Le gain caché d'une année supplémentaire.</h3>
+      <p id="autoP">—</p>
+      <div class="gainline">
+        <div><div class="k">LTV gagnée / client</div><div class="v" id="gainLTV">0&nbsp;€</div></div>
+        <div><div class="k">Sur votre flux annuel</div><div class="v" id="gainFlux">0&nbsp;€</div></div>
+        <div><div class="k">Nouveau ratio LTV/CAC</div><div class="v" id="gainRatio">0</div></div>
+      </div>
+      <p class="note">Calcul à marge et fréquence constantes. La fidélisation coûte généralement 5 à 7 fois moins cher que l'acquisition d'un nouveau client.</p>
+    </div>
+
+    <!-- LEVIERS -->
+    <div class="leviers">
+      <div class="e">À retenir</div>
+      <h3>5 leviers pour valoriser vos clients existants</h3>
+      <p class="intro">Cinq habitudes qui changent durablement votre relation client et votre rentabilité.</p>
+
+      <div class="lev">
+        <div class="n">1</div>
+        <div class="body">
+          <strong>Mesurez votre vraie durée de vie client</strong>
+          <p>Pas l'intuition. Sortez la liste de vos clients de 2020 et regardez combien sont encore là en 2026. L'écart entre la perception et la réalité est souvent surprenant.</p>
+        </div>
+      </div>
+
+      <div class="lev">
+        <div class="n">2</div>
+        <div class="body">
+          <strong>Calculez votre CAC réel, pas juste vos pubs</strong>
+          <p>Salaires commerciaux, salons, contenu, déplacements, commissions. Tout ce qui vous coûte pour signer un nouveau client. Le vrai chiffre est presque toujours plus élevé que prévu.</p>
+        </div>
+      </div>
+
+      <div class="lev">
+        <div class="n">3</div>
+        <div class="body">
+          <strong>Augmentez la fréquence d'achat avant d'acquérir</strong>
+          <p>Un client qui achète six fois au lieu de quatre vaut 50&nbsp;% de plus en LTV. Et c'est cinq à sept fois moins cher que d'acquérir un nouveau client.</p>
+        </div>
+      </div>
+
+      <div class="lev">
+        <div class="n">4</div>
+        <div class="body">
+          <strong>Si votre ratio est bon, investissez plus</strong>
+          <p>Un ratio LTV/CAC à 10 vous donne une marge de manœuvre énorme. Vous laissez de la croissance sur la table en sous-investissant dans l'acquisition.</p>
+        </div>
+      </div>
+
+      <div class="lev">
+        <div class="n">5</div>
+        <div class="body">
+          <strong>Comparez vos canaux d'acquisition</strong>
+          <p>Tous les canaux n'ont pas le même CAC. Un client venu en bouche-à-oreille à 50&nbsp;€ vaut souvent mieux que dix leads payants à 300&nbsp;€. Distinguez-les dans vos comptes.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- NEXTUP -->
+    <div class="nextup">
+      <div class="e">La suite, chaque semaine</div>
+      <h3>Un nouveau mini-outil chaque lundi, 12 semaines durant.</h3>
+      <p>Le Challenge Outils Dirigeant continue. Si cet outil vous a été utile, retrouvez les analyses, les retours terrain et les prochains outils sur LinkedIn.</p>
+      <a href="https://www.linkedin.com/in/hassen-bamri-81b40471" target="_blank" rel="noopener" class="lk">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.13 1.45-2.13 2.95v5.66H9.36V9h3.41v1.56h.05c.47-.9 1.63-1.85 3.36-1.85 3.6 0 4.26 2.37 4.26 5.45v6.29zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0z"/></svg>
+        Découvrir la suite du challenge
+      </a>
+    </div>
+
+    <!-- ADJUST -->
+    <div class="adjust">
+      <h3>Ces chiffres ne reflètent pas votre cas&nbsp;?</h3>
+      <div class="sub">Ajustez librement ci-dessous, tout se recalcule en direct.</div>
+
+      <div class="grp">
+        <div class="grph"><span class="n">1</span><h4>Mon client moyen</h4></div>
+        <div class="f"><div class="frow"><span class="flbl">Panier moyen par achat</span><span class="fval"><span id="aPan-v">300</span>&nbsp;€</span></div><input type="range" min="10" max="5000" step="10" value="300" id="aPan"></div>
+        <div class="f"><div class="frow"><span class="flbl">Fréquence d'achat par an</span><span class="fval" id="aFreq-v">8</span></div><input type="range" min="1" max="52" value="8" id="aFreq"></div>
+        <div class="f"><div class="frow"><span class="flbl">Durée moyenne de la relation</span><span class="fval"><span id="aDur-v">4</span>&nbsp;ans</span></div><input type="range" min="1" max="15" value="4" id="aDur"></div>
+        <div class="f"><div class="frow"><span class="flbl">Marge brute moyenne</span><span class="fval"><span id="aMa-v">40</span>&nbsp;%</span></div><input type="range" min="5" max="80" value="40" id="aMa"></div>
+      </div>
+
+      <div class="grp">
+        <div class="grph"><span class="n">2</span><h4>Mon acquisition</h4></div>
+        <div class="f"><div class="frow"><span class="flbl">Budget marketing &amp; commercial mensuel</span><span class="fval"><span id="aBud-v">1500</span>&nbsp;€</span></div><input type="range" min="0" max="50000" step="100" value="1500" id="aBud"></div>
+        <div class="f"><div class="frow"><span class="flbl">Nouveaux clients acquis par mois</span><span class="fval" id="aNew-v">5</span></div><input type="range" min="1" max="200" value="5" id="aNew"></div>
+      </div>
+    </div>
+
+    <div style="margin-top:8px">
+      <button class="btn ghost" onclick="restart()">↻ Refaire le calcul depuis le début</button>
+    </div>
+
+    <p class="disclaimer">Calcul indicatif. La LTV nette intègre votre marge brute. Le ratio LTV/CAC sain est généralement de 3:1 minimum, 5:1 confortable. En dessous, l'acquisition est trop coûteuse ; au-dessus de 5, vous pouvez investir davantage en acquisition pour accélérer la croissance.</p>
+  </section>
+
+  <div class="footer">
+    Un outil par <a href="https://www.linkedin.com/in/hassen-bamri-81b40471" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;text-underline-offset:3px"><b>Hassen Bamri</b></a>.<br>
+    Retrouvez mes autres outils et publications sur <a href="https://www.linkedin.com/in/hassen-bamri-81b40471" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;text-underline-offset:3px"><b>LinkedIn</b></a>.
+  </div>
+</div>
+
+<script>
+"use strict";
+
+var Q = [
+  {key:"Pan",  axe:"Mon client moyen", title:"Quel est votre panier moyen par achat ?",       expl:"Le montant moyen HT que dépense un client à chaque commande, contrat ou intervention.",         min:10,  max:5000,  step:10,  def:300, unit:"€",  display:"money"},
+  {key:"Freq", axe:"Mon client moyen", title:"À quelle fréquence achète-t-il par an ?",        expl:"Combien de fois par an un client moyen revient ou renouvelle. Abonnement, contrat, achat ponctuel : toutes les fois.", min:1, max:52, step:1, def:8, unit:""},
+  {key:"Dur",  axe:"Mon client moyen", title:"Combien de temps reste-t-il client en moyenne ?",expl:"Durée moyenne, en années. Soyez honnête. Vos clients de 2020 sont-ils encore là en 2026 ? La plupart partent plus tôt qu'on ne croit.", min:1, max:15, step:1, def:4, unit:"ans"},
+  {key:"Ma",   axe:"Mon client moyen", title:"Quelle est votre marge brute moyenne ?",         expl:"En pourcentage du panier. Marge brute = ce qui reste après vos coûts directs. 40 % est une moyenne TPE/PME services.", min:5, max:80, step:1, def:40, unit:"%"},
+  {key:"Bud",  axe:"Mon acquisition",  title:"Quel est votre budget marketing &amp; commercial mensuel ?", expl:"Tout ce qui sert à acquérir : pubs, salons, contenu, salaires commerciaux, déplacements, outils.",  min:0, max:50000, step:100, def:1500, unit:"€", display:"money"},
+  {key:"New",  axe:"Mon acquisition",  title:"Combien de nouveaux clients acquérez-vous par mois ?", expl:"Nouveaux clients réels, pas les leads. Ceux qui ont effectivement acheté au moins une fois.", min:1, max:200, step:1, def:5, unit:""}
+];
+
+var state = {i:0, vals:{}};
+Q.forEach(function(q){ state.vals[q.key] = q.def; });
+
+function fmt(n){ return Math.round(n).toLocaleString("fr-FR"); }
+function fmtMoney(n){ return fmt(n)+"\u00A0€"; }
+
+function go(id){
+  ["intro","step","result"].forEach(function(s){ document.getElementById("s-"+s).classList.add("hidden"); });
+  var el = document.getElementById("s-"+id); el.classList.remove("hidden");
+  el.style.animation="none"; void el.offsetWidth; el.style.animation="";
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function start(){ state.i = 0; go("step"); render(); }
+function restart(){ state.i = 0; Q.forEach(function(q){ state.vals[q.key] = q.def; }); go("intro"); }
+
+function render(){
+  var q = Q[state.i];
+  document.getElementById("stepLabel").textContent = "Question "+(state.i+1)+" / 6";
+  document.getElementById("axeLabel").textContent  = q.axe;
+  document.getElementById("fill").style.width = Math.round(((state.i+1)/6)*100) + "%";
+  document.getElementById("qTitle").innerHTML = q.title;
+  document.getElementById("qExpl").textContent  = q.expl;
+  document.getElementById("prevBtn").style.visibility = state.i===0 ? "hidden" : "visible";
+  document.getElementById("nextBtn").textContent = state.i===5 ? "Voir le résultat →" : "Continuer";
+
+  var sl = document.getElementById("slider");
+  sl.min = q.min; sl.max = q.max; sl.step = q.step || 1;
+  sl.value = state.vals[q.key];
+
+  var minD = q.display === "money" ? fmt(q.min)+"\u00A0€" : (q.unit ? q.min+"\u00A0"+q.unit : q.min);
+  var maxD = q.display === "money" ? fmt(q.max)+"\u00A0€" : (q.unit ? q.max+"\u00A0"+q.unit : q.max);
+  document.getElementById("boundMin").textContent = minD;
+  document.getElementById("boundMax").textContent = maxD;
+
+  paintSlider();
+  updateBigNum(q);
+}
+
+function updateBigNum(q){
+  var v = state.vals[q.key];
+  var num, unit="";
+  if(q.display === "money"){
+    num = fmt(v)+"\u00A0€";
+    unit = q.key === "Pan" ? "par commande / contrat" : "par mois";
+  } else if(q.unit === "%"){
+    num = v+"\u00A0%"; unit = "de marge brute";
+  } else if(q.unit === "ans"){
+    num = v; unit = v > 1 ? "années en moyenne" : "année en moyenne";
+  } else {
+    num = v;
+    if(q.key === "Freq") unit = v > 1 ? "fois par an" : "fois par an";
+    else if(q.key === "New") unit = "nouveaux clients par mois";
+  }
+  var bn = document.getElementById("bigNum");
+  bn.textContent = num;
+  document.getElementById("bigUnit").textContent = unit;
+  bn.classList.remove("knock"); void bn.offsetWidth; bn.classList.add("knock");
+}
+
+function paintSlider(){
+  var sl = document.getElementById("slider");
+  var pct = ((sl.value - sl.min) / (sl.max - sl.min)) * 100;
+  sl.style.setProperty("--p", pct + "%");
+}
+
+document.getElementById("slider").addEventListener("input", function(){
+  var q = Q[state.i];
+  state.vals[q.key] = +this.value;
+  paintSlider();
+  updateBigNum(q);
+});
+
+function next(){ if(state.i < 5){ state.i++; render(); } else { showResult(); } }
+function prev(){ if(state.i > 0){ state.i--; render(); } }
+
+// RESULT
+function syncAdjust(){
+  ["Pan","Freq","Dur","Ma","Bud","New"].forEach(function(k){
+    document.getElementById("a"+k).value = state.vals[k];
+  });
+  paintAdjust();
+}
+
+function paintAdjust(){
+  ["aPan","aFreq","aDur","aMa","aBud","aNew"].forEach(function(id){
+    var sl = document.getElementById(id);
+    var lbl = document.getElementById(id+"-v");
+    if(lbl){
+      if(id === "aPan" || id === "aBud") lbl.textContent = fmt(sl.value);
+      else lbl.textContent = sl.value;
+    }
+    var pct = ((sl.value - sl.min) / (sl.max - sl.min)) * 100;
+    sl.style.setProperty("--p", pct + "%");
+  });
+}
+
+function recompute(){
+  var Pan  = +document.getElementById("aPan").value;
+  var Freq = +document.getElementById("aFreq").value;
+  var Dur  = +document.getElementById("aDur").value;
+  var Ma   = +document.getElementById("aMa").value / 100;
+  var Bud  = +document.getElementById("aBud").value;
+  var New  = +document.getElementById("aNew").value;
+
+  var ltvBrute = Pan * Freq * Dur;
+  var ltvNette = ltvBrute * Ma;
+  var cac      = New > 0 ? Bud / New : 0;
+  var ratio    = cac > 0 ? ltvNette / cac : 0;
+  var maxCac   = ltvNette / 3;
+  var margeAn  = Pan * Freq * Ma;
+
+  document.getElementById("ltvNet").textContent = fmt(ltvNette);
+
+  // Ratio
+  var ratioEl = document.getElementById("ratio");
+  var prevRatio = +ratioEl.dataset.v || 0;
+  ratioEl.textContent = ratio.toFixed(1).replace(".",",");
+  ratioEl.dataset.v = ratio;
+  if(Math.abs(ratio - prevRatio) > 0.5){
+    ratioEl.classList.remove("pulse"); void ratioEl.offsetWidth; ratioEl.classList.add("pulse");
+  }
+
+  var ratioSub = document.getElementById("ratioSub");
+  if(ratio < 1){ ratioSub.textContent = "Vous perdez de l'argent à chaque acquisition"; }
+  else if(ratio < 3){ ratioSub.textContent = "Trop bas — l'acquisition coûte trop cher"; }
+  else if(ratio < 5){ ratioSub.textContent = "Correct — rentable mais à optimiser"; }
+  else if(ratio < 10){ ratioSub.textContent = "Très bon — marge de manœuvre confortable"; }
+  else { ratioSub.textContent = "Excellent — vous sous-investissez en acquisition"; }
+
+  // VERDICT
+  var verdict = document.getElementById("verdict");
+  var vTitle = document.getElementById("verdictTitle");
+  var vMsg = document.getElementById("verdictMsg");
+  verdict.classList.remove("danger","warn","good");
+  document.getElementById("maxCac").textContent = fmt(maxCac);
+
+  if(ratio < 3){
+    verdict.classList.add("danger");
+    vTitle.textContent = "Votre acquisition vous coûte trop cher.";
+    vMsg.textContent = "Chaque nouveau client vous coûte "+fmtMoney(cac)+" pour une LTV nette de "+fmtMoney(ltvNette)+". À ce rythme, votre croissance se paye en marge. Deux leviers : baisser votre CAC ou allonger la relation client.";
+  } else if(ratio < 5){
+    verdict.classList.add("warn");
+    vTitle.textContent = "Rentable, mais sous-optimisé.";
+    vMsg.textContent = "Votre ratio est correct (≥ 3:1) mais vous laissez de la croissance sur la table. Soit vous investissez plus en acquisition pour accélérer, soit vous augmentez la fréquence d'achat pour booster la LTV.";
+  } else {
+    verdict.classList.add("good");
+    var marge = maxCac - cac;
+    vTitle.textContent = "Vous pouvez investir davantage.";
+    vMsg.textContent = "Votre ratio est solide. Vous pourriez dépenser jusqu'à "+fmtMoney(maxCac)+" pour acquérir un client, soit "+fmtMoney(marge)+" de plus par client qu'aujourd'hui. C'est votre marge de croissance immédiate.";
+  }
+
+  // TIMELINE année par année
+  var timeline = document.getElementById("timeline"); timeline.innerHTML="";
+  var maxVal = ltvNette;
+  var breakevenY = null;
+  for(var y = 1; y <= Math.min(Dur, 10); y++){
+    var col = document.createElement("div");
+    col.className = "col";
+    var cumulMarge = margeAn * y;
+    var net = cumulMarge - cac;
+    if(breakevenY === null && net >= 0) breakevenY = y;
+    var h = (cumulMarge / maxVal) * 100;
+    col.innerHTML = '<span class="v">'+fmtMoney(cumulMarge)+'</span><div class="bar" style="height:'+h+'%"></div><span class="y">An '+y+'</span>';
+    timeline.appendChild(col);
+  }
+  // Colonne CAC à part (en rouge) en première position visuelle ? Non, on garde la timeline propre et on parle du breakeven en dessous.
+
+  // Breakeven
+  var monthsToBreakeven = cac > 0 && margeAn > 0 ? (cac / margeAn) * 12 : 0;
+  var bk = document.getElementById("breakeven");
+  if(monthsToBreakeven > 0){
+    if(monthsToBreakeven < 1){
+      bk.innerHTML = "Votre client rembourse son coût d'acquisition <b>dès le premier mois</b>. Tout ce qui vient ensuite est du profit.";
+    } else if(monthsToBreakeven < 24){
+      bk.innerHTML = "Votre client rembourse son coût d'acquisition au bout de <b>"+monthsToBreakeven.toFixed(1).replace(".",",")+" mois</b>. Tout ce qui vient ensuite est du profit.";
+    } else {
+      var anneesBE = monthsToBreakeven / 12;
+      bk.innerHTML = "Votre client met <b>"+anneesBE.toFixed(1).replace(".",",")+" années</b> à rembourser son coût d'acquisition. Sur une durée de vie de "+Dur+" an"+(Dur>1?"s":"")+", la marge nette de l'opération est limitée.";
+    }
+  } else {
+    bk.textContent = "Calcul du seuil de rentabilité indisponible.";
+  }
+
+  // GAIN si +1 an
+  var ltvPlus1 = Pan * Freq * (Dur + 1) * Ma;
+  var gainPerClient = ltvPlus1 - ltvNette;
+  var fluxClientsAn = New * 12;
+  var gainFluxAnnuel = gainPerClient * fluxClientsAn;
+  var newRatio = cac > 0 ? ltvPlus1 / cac : 0;
+  document.getElementById("gainLTV").textContent = fmtMoney(gainPerClient);
+  document.getElementById("gainFlux").textContent = fmtMoney(gainFluxAnnuel);
+  document.getElementById("gainRatio").textContent = newRatio.toFixed(1).replace(".",",");
+  document.getElementById("autoP").textContent = "Si vous parveniez à retenir vos clients un an de plus, leur LTV passerait de "+fmtMoney(ltvNette)+" à "+fmtMoney(ltvPlus1)+". Sur le flux de nouveaux clients que vous acquérez chaque année, c'est "+fmtMoney(gainFluxAnnuel)+" de marge supplémentaire.";
+}
+
+function showResult(){
+  syncAdjust();
+  go("result");
+  recompute();
+}
+
+["aPan","aFreq","aDur","aMa","aBud","aNew"].forEach(function(id){
+  document.getElementById(id).addEventListener("input", function(){ paintAdjust(); recompute(); });
+});
+</script>
+</body>
+</html>
